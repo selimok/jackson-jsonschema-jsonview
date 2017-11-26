@@ -59,4 +59,21 @@ public class SampleModelJsonSchemaTest {
         //then
         assertEquals(jsonSchema.asObjectSchema().getProperties().keySet().toString(), "[id]");
     }
+    
+    @Test
+    public void shouldCreateJsonSchemaAsStringForSampleModelUsingUserView() throws JsonProcessingException {        
+        // given
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+        objectMapper.setConfig(objectMapper.getSerializationConfig().withView(AdminView.class));
+        JsonSchemaGenerator generator = new JsonSchemaGenerator(objectMapper);
+
+        // when
+        JsonSchema jsonSchema = generator.generateSchema(SampleModel.class);
+        ObjectMapper schemaObjectMapper = new ObjectMapper();
+        String jsonSchemaAsString = schemaObjectMapper.writeValueAsString(jsonSchema);
+        
+        //then
+        assertEquals(jsonSchemaAsString,"{\"type\":\"object\",\"id\":\"urn:jsonschema:software:sandc:lab:model:SampleModel\",\"properties\":{\"id\":{\"type\":\"string\"}}}");
+    }
 }
